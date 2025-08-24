@@ -29,11 +29,15 @@ fi
 # 2. Disable wifi & bluetooth
 if [ ! -f /etc/modprobe.d/rtw88_8821ce.conf ]; then
 	# To find your wifi kernel module: lspci -v, and the driver name is the last line
+
+    # Wifi drivers for various desktop / laptops I've had, mostly Dells & a Macbook
 	sudo bash -c "echo 'blacklist rtw88_8821ce' > /etc/modprobe.d/rtw88_8821ce.conf"
 	sudo bash -c "echo 'blacklist mt7921e' > /etc/modprobe.d/mt7921e.conf"
 	sudo bash -c "echo 'blacklist mwifiex_pcie' > /etc/modprobe.d/mwifiex_pcie.conf"
 	sudo bash -c "echo 'blacklist iwlwifi' > /etc/modprobe.d/iwlwifi.conf"
-	
+	sudo bash -c "echo 'blacklist bcma' > /etc/modprobe.d/bcma.conf"
+
+    # All bluetooth drivers I could find
 	sudo bash -c "echo 'blacklist bluetooth'  > /etc/modprobe.d/blmt7921euetooth.conf"
 	sudo bash -c "echo 'install bluetooth /bin/true' >> /etc/modprobe.d/bluetooth.conf"
 	sudo bash -c "echo 'blacklist btrtl' >> /etc/modprobe.d/bluetooth.conf"
@@ -61,6 +65,8 @@ if [ ! -f /etc/modprobe.d/rtw88_8821ce.conf ]; then
 	sudo modprobe -r mwifiex_pcie
 	sudo modprobe -r bluetooth
 	sudo modprobe -r iwlwifi
+    sudo modprobe -r bcma
+	
 	sudo bash -c "echo 'iface wlp2s0 inet manual' > /etc/network/interfaces.d/no-wifi" 
 	sudo systemctl disable bluetooth.service
 	sudo sed -i 's/AutoEnable=true/AutoEnable=false/' /etc/bluetooth/main.conf
