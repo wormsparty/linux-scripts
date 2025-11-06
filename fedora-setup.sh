@@ -16,7 +16,7 @@ fi
 # TODO: Signal?
 
 # 2. Install package
-sudo dnf install rclone krita vlc transmission-gtk blender gnome-music vim-enhanced
+sudo dnf install rclone krita vlc transmission-gtk blender gnome-music vim-enhanced gnome-shell-extension-dash-to-dock gnome-shell-extension-appindicator
 
 # 3. Call the common script for non-specific configuration
 sh ./common-setup.sh
