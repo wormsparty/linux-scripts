@@ -49,6 +49,23 @@ Restart=on-abort
 WantedBy=multi-user.target
 EOT
 
+cat << EOT | sudo tee /etc/polkit-1/rules.d/49-kodi.rules
+polkit.addRule(function(action, subject) {
+    if (subject.user == "$USER") {
+        if (
+            action.id == "org.freedesktop.login1.power-off" ||
+            action.id == "org.freedesktop.login1.power-off-multiple-sessions" ||
+            action.id == "org.freedesktop.login1.reboot" ||
+            action.id == "org.freedesktop.login1.reboot-multiple-sessions" ||
+            action.id == "org.freedesktop.login1.suspend" ||
+            action.id == "org.freedesktop.login1.suspend-multiple-sessions"
+        ) {
+            return polkit.Result.YES;
+        }
+    }
+});
+EOT
+
 # Replace default green to orange prompt 
 sed -i 's/\[\\033\[01;32m\\\]/\[\\033\[01;33m\\\]/g' ~/.bashrc
 
