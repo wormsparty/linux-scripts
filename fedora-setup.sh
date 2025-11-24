@@ -12,8 +12,10 @@ if [ "`id -u`" -eq 0 ]; then
 	exit 1
 fi
 
-# 1. Install signal repository
-# TODO: Signal?
+# 1. Install signal
+FEDORA_VERSION=$(grep '^VERSION_ID=' /etc/os-release | cut -d= -f2 | tr -d '"')
+dnf config-manager addrepo --from-repofile=https://download.opensuse.org/repositories/network:im:signal/Fedora_$FEDORA_VERSION/network:im:signal.repo
+dnf install signal-desktop
 
 # 2. Install package
 sudo dnf install rclone krita vlc transmission-gtk blender gnome-music vim-enhanced gnome-shell-extension-dash-to-dock gnome-shell-extension-appindicator
