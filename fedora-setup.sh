@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ###############################################
-# This is the part that is specific to Debian #
+# This is the part that is specific to Fedora #
 ###############################################
 
 cd "`dirname $0`"
