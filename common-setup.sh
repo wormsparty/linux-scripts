@@ -31,20 +31,20 @@ if [ ! -f /etc/modprobe.d/rtw88_8821ce.conf ]; then
 	# To find your wifi kernel module: lspci -v, and the driver name is the last line
 
 	# Wifi drivers for various desktop / laptops I've had, mostly Dells & a Macbook
-	sudo bash -c "echo 'blacklist rtw88_8821ce' > /etc/modprobe.d/rtw88_8821ce.conf"
-	sudo bash -c "echo 'blacklist mt7921e' > /etc/modprobe.d/mt7921e.conf"
-	sudo bash -c "echo 'blacklist mwifiex_pcie' > /etc/modprobe.d/mwifiex_pcie.conf"
-	sudo bash -c "echo 'blacklist iwlwifi' > /etc/modprobe.d/iwlwifi.conf"
-	sudo bash -c "echo 'blacklist bcma' > /etc/modprobe.d/bcma.conf"
+	for module in rtw88_8821ce mt7921e mwifiex_pcie iwlwifi bcma; do
+		echo "blacklist $module" | sudo tee "/etc/modprobe.d/$module.conf" > /dev/null
+	done
 
 	# All bluetooth drivers I could find
-	sudo bash -c "echo 'blacklist bluetooth' > /etc/moprobe.d/buetooth.conf"
-	sudo bash -c "echo 'install bluetooth /bin/true' >> /etc/modprobe.d/bluetooth.conf"
-	sudo bash -c "echo 'blacklist btrtl' >> /etc/modprobe.d/bluetooth.conf"
-	sudo bash -c "echo 'blacklist btmtk' >> /etc/modprobe.d/bluetooth.conf"
-	sudo bash -c "echo 'blacklist btintel' >> /etc/modprobe.d/bluetooth.conf"
-	sudo bash -c "echo 'blacklist btbcm' >> /etc/modprobe.d/bluetooth.conf"
-	sudo bash -c "echo 'blacklist btusb' >> /etc/modprobe.d/bluetooth.conf"
+	sudo tee /etc/modprobe.d/bluetooth.conf > /dev/null << 'EOF'
+blacklist bluetooth
+install bluetooth /bin/true
+blacklist btrtl
+blacklist btmtk
+blacklist btintel
+blacklist btbcm
+blacklist btusb
+EOF
 
 	if which dracut; then
 		# OpenSUSE, Fedora, etc.
