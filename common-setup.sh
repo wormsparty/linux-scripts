@@ -4,7 +4,7 @@
 # This is the part that is not specific to a particular Linux distribution. #
 #############################################################################
 
-cd "`dirname $0`"
+cd "$(dirname "$0")"
 
 # 1. rclone service for Google Drive
 mkdir -p ~/GdriveSync
@@ -111,7 +111,7 @@ if [ -z "${SSH_KEY}" ]; then
 		exit 1
 	fi
 
-	ssh raspberrypi "echo '$(cat $SSH_KEY)' >> ~/.ssh/authorized_keys"
+	cat "$SSH_KEY" | ssh raspberrypi "cat >> ~/.ssh/authorized_keys"
 fi
 
 if [ ! -f ./unison-hourly.cron ]; then
@@ -139,6 +139,6 @@ fi
 
 echo "Manual steps:"
 echo " 1. Install Gnome Shell extensions (Dash to Dock + Tray Icon Reloaded)"
-echo " 3. Run 'rpi-sync' and check that everything looks it. If it is, enable crontab with 'ctonrab ./unison-hourly.cron'."
+echo " 2. Run 'rpi-sync' and check that everything looks good. If it does, enable crontab with 'crontab ./unison-hourly.cron'."
 echo "That's it !"
 

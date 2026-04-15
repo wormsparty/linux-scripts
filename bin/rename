@@ -4,5 +4,5 @@ regex=$1
 shift
 
 for x in "$@"; do
-	mv "$x" "`echo "$x" | sed "$regex"`"
+	mv "$x" "$(echo "$x" | sed "$regex")"
 done

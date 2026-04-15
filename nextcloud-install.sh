@@ -22,7 +22,7 @@ read DB_USERNAME
 DB_USERNAME="${DB_USERNAME:-nextcloud}"
 
 stty -echo
-while [ -z $DB_PASSWORD ]; do
+while [ -z "$DB_PASSWORD" ]; do
 	echo "Choose the database password:"
 	printf "> "
 	read DB_PASSWORD
@@ -59,7 +59,7 @@ EOT
 
 sudo ln -s /etc/apache2/sites-available/${DOMAIN}.conf /etc/apache2/sites-enabled/
 sudo a2enmod headers rewrite env dir mime
-sudo systemctl restart apache2 --no-page -l
+sudo systemctl restart apache2
 
 sudo mysql_secure_installation
 
@@ -86,4 +86,4 @@ sudo mkdir -p ${APACHE_DIR}/html/${DOMAIN}/data
 sudo chown -R www-data:www-data ${APACHE_DIR}/html/${DOMAIN}/
 sudo chmod -R 755 ${APACHE_DIR}/html/${DOMAIN}/
 
-open http://${DOMAIN}
+xdg-open "http://${DOMAIN}" 2>/dev/null || echo "Visit http://${DOMAIN}"

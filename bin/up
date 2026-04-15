@@ -1,24 +1,24 @@
  #!/bin/sh
 
-if which dnf > /dev/null; then
+if which dnf > /dev/null 2>&1; then
 	sudo dnf upgrade
 	sudo dnf autoremove
-	exit
 fi
 
-if which snap > /dev/null; then
+if which snap > /dev/null 2>&1; then
 	sudo snap refresh
 fi
 
-if which flatpak > /dev/null; then
+if which flatpak > /dev/null 2>&1; then
 	sudo flatpak update
 	sudo flatpak uninstall --unused --delete-data
 fi
 
-if [ "$1" != "1" ]; then
-	sudo apt update
+if which apt > /dev/null 2>&1; then
+	if [ "$1" != "1" ]; then
+		sudo apt update
+	fi
+	sudo apt full-upgrade
+	sudo apt autoremove
+	sudo apt clean
 fi
-
-sudo apt full-upgrade
-sudo apt autoremove
-sudo apt clean

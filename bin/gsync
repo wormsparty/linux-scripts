@@ -4,7 +4,7 @@ mode=$1
 folder=$2
 
 if test $# -ne 1 && test $# -ne 2; then
-	echo "Usage: $(basename $0) pull|push|sync|sync-init (folder)"
+	echo "Usage: $(basename "$0") pull|push (folder)"
 	exit 1
 fi
 

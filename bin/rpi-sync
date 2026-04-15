@@ -1,6 +1,6 @@
 #!/bin/sh
 
-SSH_KEY=$(find ~/.ssh -name \*.pub)
+SSH_KEY=$(find ~/.ssh -name \*.pub | head -1)
 
 unison ~/GdriveSync ssh://mob@raspberrypi/GdriveSync -sshargs="-i ${SSH_KEY%.*}"
 unison ~/Videos ssh://mob@raspberrypi/Videos -sshargs="-i ${SSH_KEY%.*}"

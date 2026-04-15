@@ -4,10 +4,10 @@
 # This is the part that is specific to Debian #
 ###############################################
 
-cd "`dirname $0`"
+cd "$(dirname "$0")"
 
 # 0. Check we are not admin
-if [ "`id -u`" -eq 0 ]; then
+if [ "$(id -u)" -eq 0 ]; then
 	echo "Do NOT run this script as root. It will call 'sudo' as needed."
 	exit 1
 fi
@@ -22,7 +22,7 @@ else
 fi
 
 # 2. Install packages
-sudo apt install curl rclone krita vlc transmission-gtk blender gnome-music signal-desktop libreoffice-writer vim unison-gtk ntp
+sudo apt install -y curl rclone krita vlc transmission-gtk blender gnome-music signal-desktop libreoffice-writer vim unison-gtk ntp
 
 sudo systemctl restart ntp
 sudo systemctl enable ntpsec
