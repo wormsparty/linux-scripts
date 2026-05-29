@@ -32,7 +32,10 @@ if [ ! -f /etc/modprobe.d/rtw88_8821ce.conf ]; then
 
 	# Wifi drivers for various desktop / laptops I've had, mostly Dells & a Macbook
 	for module in rtw88_8821ce mt7921e mwifiex_pcie iwlwifi bcma; do
-		echo "blacklist $module" | sudo tee "/etc/modprobe.d/$module.conf" > /dev/null
+		sudo tee "/etc/modprobe.d/$module.conf" > /dev/null << EOF
+blacklist $module
+install $module /bin/true
+EOF
 	done
 
 	# All bluetooth drivers I could find
