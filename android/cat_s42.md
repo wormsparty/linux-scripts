@@ -1,7 +1,3 @@
-Voici ton markdown corrigé :
-
----
-
 # How to flash Android CAT S42
 
 ## Bootloader
@@ -14,7 +10,7 @@ Voici ton markdown corrigé :
    python3 -m venv .venv
    . .venv/bin/activate
    pip install -r requirements.txt
-   sudo usermod -a -G plugdev $USER  # Adapter en fonction de l'OS
+   sudo usermod -a -G plugdev $USER  # Adapter en fonction de la distribution Linux
    sudo usermod -a -G dialout $USER
    sudo cp Setup/Linux/*.rules /etc/udev/rules.d
    sudo udevadm control -R
