@@ -97,7 +97,7 @@ fi
 gsettings set org.gnome.desktop.privacy remember-recent-files false
 
 # 4. Raspberry
-if ! grep -q rpi4 /etc/hosts; then
+if ! grep -q rpi /etc/hosts; then
 	echo "192.168.1.153   rpi" | sudo tee -a /etc/hosts
 else
 	echo "Ignoring modifying hosts, looks already done."
@@ -114,7 +114,7 @@ if [ -z "${SSH_KEY}" ]; then
 		exit 1
 	fi
 
-	cat "$SSH_KEY" | ssh raspberrypi "cat >> ~/.ssh/authorized_keys"
+	cat "$SSH_KEY" | ssh rpi "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
 fi
 
 if [ ! -f ./unison-hourly.cron ]; then
