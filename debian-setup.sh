@@ -22,7 +22,7 @@ else
 fi
 
 # 2. Install packages
-sudo apt install -y curl rclone krita vlc transmission-gtk blender gnome-music signal-desktop libreoffice-writer vim unison-gtk ntp
+sudo apt install -y curl rclone krita vlc transmission-gtk blender signal-desktop libreoffice-writer vim unison-gtk ntp
 
 sudo systemctl restart ntp
 sudo systemctl enable ntpsec
