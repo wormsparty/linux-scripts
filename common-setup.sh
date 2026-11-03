@@ -81,7 +81,64 @@ else
 	echo "Ignoring blacklist and bluetooth, looks already done."
 fi
 
-# 3. Various config
+# 3. ArtCraft launcher + Craft apps (replaces Krita and LibreOffice)
+# Installs the official .deb/.rpm/.pkg.tar.zst of each app from its latest GitHub release,
+# exactly like the launcher does, so the launcher picks them up and updates them.
+craft_install() {
+	repo="$1"   # e.g. craft-launcher, photocraft
+	pkg="$2"    # installed package name, e.g. artcraft-launcher, photocraft
+
+	if command -v apt >/dev/null 2>&1; then
+		ext=deb
+		installed() { dpkg -s "$pkg" >/dev/null 2>&1; }
+		install_file() { sudo apt install -y "$1"; }
+	elif command -v dnf >/dev/null 2>&1; then
+		ext=rpm
+		installed() { rpm -q "$pkg" >/dev/null 2>&1; }
+		install_file() { sudo dnf install -y "$1"; }
+	elif command -v pacman >/dev/null 2>&1; then
+		# Arch / CachyOS: the package is named ai.storyteller.<app> inside the archive
+		ext=pkg.tar.zst
+		installed() { pacman -Q "ai.storyteller.$pkg" >/dev/null 2>&1; }
+		install_file() { sudo pacman -U --needed --noconfirm "$1"; }
+	else
+		echo "Unsupported package manager, skipping $repo."
+		return 1
+	fi
+
+	if installed; then
+		echo "Ignoring $pkg, already installed (update it from the ArtCraft launcher)."
+		return 0
+	fi
+
+	arch=$(uname -m)
+	url=$(curl -fsSL "https://api.github.com/repos/storytold/$repo/releases/latest" \
+		| grep -o '"browser_download_url": *"[^"]*"' | cut -d'"' -f4 \
+		| grep -E "/${pkg}-[0-9.]+-linux-${arch}\.${ext}\$" | head -n 1)
+
+	if [ -z "$url" ]; then
+		echo "No $ext package found for $repo ($arch), skipping."
+		return 1
+	fi
+
+	tmp=$(mktemp -d)
+	file="$tmp/$(basename "$url")"
+	if curl -fL -o "$file" "$url" \
+		&& curl -fsSL -o "$tmp/SHA256SUMS.txt" "$(dirname "$url")/SHA256SUMS.txt" \
+		&& (cd "$tmp" && grep " \*\?$(basename "$file")\$" SHA256SUMS.txt | sha256sum -c -); then
+		install_file "$file"
+	else
+		echo "Download or checksum verification failed for $repo."
+	fi
+	rm -rf "$tmp"
+}
+
+craft_install craft-launcher artcraft-launcher
+craft_install photocraft photocraft
+craft_install wordcraft wordcraft
+craft_install pdfcraft pdfcraft
+
+# 4. Various config
 
 # Prevent oversized journal files
 sudo sed -i 's/#SystemMaxUse=/SystemMaxUse=50M/' /etc/systemd/journald.conf
@@ -96,7 +153,7 @@ fi
 
 gsettings set org.gnome.desktop.privacy remember-recent-files false
 
-# 4. Raspberry
+# 5. Raspberry
 if ! grep -q rpi /etc/hosts; then
 	echo "192.168.1.153   rpi" | sudo tee -a /etc/hosts
 else

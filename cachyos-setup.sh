@@ -20,7 +20,7 @@ else
 fi
 
 # 2. Install packages (signal-desktop is in the official repositories)
-sudo pacman -Syu --needed curl rclone krita vlc transmission-gtk blender signal-desktop libreoffice-fresh vim unison openai-codex steam gnome-shell-extension-dash-to-dock gnome-shell-extension-appindicator
+sudo pacman -Syu --needed curl rclone vlc transmission-gtk blender signal-desktop vim unison openai-codex steam gnome-shell-extension-dash-to-dock gnome-shell-extension-appindicator
 
 sudo timedatectl set-ntp true
 
