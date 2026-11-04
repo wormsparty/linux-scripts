@@ -27,7 +27,7 @@ if [ ! -d ~/.local/bin ]; then
 fi
 
 # 2. Disable wifi & bluetooth
-if [ ! -f /etc/modprobe.d/rtw88_8821ce.conf ]; then
+#if [ ! -f /etc/modprobe.d/rtw88_8821ce.conf ]; then
 	# To find your wifi kernel module: lspci -v, and the driver name is the last line
 
 	# Wifi drivers for various desktop / laptops I've had, mostly Dells & a Macbook
@@ -77,9 +77,9 @@ EOF
 	sudo systemctl disable bluetooth.service
 	sudo sed -i 's/AutoEnable=true/AutoEnable=false/' /etc/bluetooth/main.conf
 	sudo sed -i 's/#AutoEnable=true/AutoEnable=false/' /etc/bluetooth/main.conf
-else
-	echo "Ignoring blacklist and bluetooth, looks already done."
-fi
+#else
+#	echo "Ignoring blacklist and bluetooth, looks already done."
+#fi
 
 # 3. ArtCraft launcher + Craft apps (replaces Krita and LibreOffice)
 # Installs the official .deb/.rpm/.pkg.tar.zst of each app from its latest GitHub release,
@@ -137,6 +137,56 @@ craft_install craft-launcher artcraft-launcher
 craft_install photocraft photocraft
 craft_install wordcraft wordcraft
 craft_install pdfcraft pdfcraft
+
+# Tidal HiFi (AppImage, latest GitHub release)
+TIDAL_APPIMAGE="${HOME}/Applications/tidal-hifi.AppImage"
+if [ ! -f "$TIDAL_APPIMAGE" ]; then
+	mkdir -p "${HOME}/Applications" "${HOME}/.local/share/applications" "${HOME}/.local/share/icons"
+
+	if [ "$(uname -m)" = "aarch64" ]; then
+		TIDAL_PATTERN='tidal-hifi-[0-9.]*-arm64\.AppImage'
+	else
+		TIDAL_PATTERN='tidal-hifi-[0-9.]*\.AppImage'
+	fi
+
+	TIDAL_URL=$(curl -fsSL https://api.github.com/repos/Mastermindzh/tidal-hifi/releases/latest \
+		| grep -o "https://[^\"]*/${TIDAL_PATTERN}" | head -n 1)
+
+	if [ -z "$TIDAL_URL" ]; then
+		echo "Could not find latest Tidal HiFi release, falling back to 9.0.1."
+		TIDAL_URL="https://github.com/Mastermindzh/tidal-hifi/releases/download/9.0.1/tidal-hifi-9.0.1.AppImage"
+	fi
+
+	if curl -fL -o "$TIDAL_APPIMAGE" "$TIDAL_URL"; then
+		chmod +x "$TIDAL_APPIMAGE"
+
+		# Extract the icon from the AppImage
+		TIDAL_TMP=$(mktemp -d)
+		(cd "$TIDAL_TMP" && "$TIDAL_APPIMAGE" --appimage-extract 'usr/share/icons/*' > /dev/null 2>&1)
+		TIDAL_ICON=$(find "$TIDAL_TMP/squashfs-root/usr/share/icons" -path '*256x256*' -name '*.png' 2> /dev/null | head -n 1)
+		if [ -n "$TIDAL_ICON" ]; then
+			cp -L "$TIDAL_ICON" "${HOME}/.local/share/icons/tidal-hifi.png"
+		fi
+		rm -rf "$TIDAL_TMP"
+
+		cat << EOT > "${HOME}/.local/share/applications/tidal-hifi.desktop"
+[Desktop Entry]
+Type=Application
+Name=TIDAL Hi-Fi
+Comment=Tidal music client
+Exec=${TIDAL_APPIMAGE} %U
+Icon=${HOME}/.local/share/icons/tidal-hifi.png
+Categories=Audio;Music;Player;AudioVideo;
+Terminal=false
+StartupWMClass=tidal-hifi
+EOT
+	else
+		echo "Failed to download Tidal HiFi."
+		rm -f "$TIDAL_APPIMAGE"
+	fi
+else
+	echo "Ignoring Tidal HiFi, looks already installed."
+fi
 
 # 4. Various config
 

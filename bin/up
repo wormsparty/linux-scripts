@@ -5,6 +5,18 @@ if which dnf > /dev/null 2>&1; then
 	sudo dnf autoremove
 fi
 
+if which pacman > /dev/null 2>&1; then
+	sudo pacman -Syu
+	orphans=$(pacman -Qdtq)
+	if [ -n "$orphans" ]; then
+		sudo pacman -Rns $orphans
+	fi
+	if which paccache > /dev/null 2>&1; then
+		sudo paccache -rk2
+		sudo paccache -ruk0
+	fi
+fi
+
 if which snap > /dev/null 2>&1; then
 	sudo snap refresh
 fi
