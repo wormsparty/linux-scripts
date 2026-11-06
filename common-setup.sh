@@ -6,21 +6,8 @@
 
 cd "$(dirname "$0")"
 
-# 1. rclone service for Google Drive
+# 1. Local folders & scripts
 mkdir -p ~/GdriveSync
-
-mkdir -p "${HOME}/.config/rclone"
-touch "${HOME}/.config/rclone/rclone.conf"
-
-if ! grep -q '\[gdrive\]' "${HOME}/.config/rclone/rclone.conf"; then
-	echo "Please add your Google Drive account and name it 'gdrive'"
-	rclone config
-
-	if ! grep -q '\[gdrive\]' "${HOME}/.config/rclone/rclone.conf"; then
-		echo "'gdrive' doesn't seem to be configured. Please configure it and re-run this script"
-		#exit 1
-	fi
-fi
 
 if [ ! -d ~/.local/bin ]; then
 	ln -s "$PWD/bin" ~/.local/bin

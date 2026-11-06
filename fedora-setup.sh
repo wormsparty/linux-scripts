@@ -18,7 +18,7 @@ sudo dnf config-manager addrepo --from-repofile=https://download.opensuse.org/re
 sudo dnf install signal-desktop
 
 # 2. Install package
-sudo dnf install rclone vlc transmission-gtk blender vim-enhanced gnome-shell-extension-dash-to-dock gnome-shell-extension-appindicator fuse-libs
+sudo dnf install vlc transmission-gtk blender vim-enhanced gnome-shell-extension-dash-to-dock gnome-shell-extension-appindicator fuse-libs
 
 # 3. Call the common script for non-specific configuration
 sh ./common-setup.sh

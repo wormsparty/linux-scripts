@@ -22,7 +22,7 @@ else
 fi
 
 # 2. Install packages
-sudo apt install -y curl rclone vlc transmission-gtk blender signal-desktop vim unison-gtk ntp libfuse2t64
+sudo apt install -y curl vlc transmission-gtk blender signal-desktop vim unison-gtk ntp libfuse2t64
 
 sudo systemctl restart ntp
 sudo systemctl enable ntpsec
