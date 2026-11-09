@@ -175,6 +175,60 @@ else
 	echo "Ignoring Tidal HiFi, looks already installed."
 fi
 
+# Streamlink Twitch GUI (AppImage, latest GitHub release, needs the streamlink package)
+STG_APPIMAGE="${HOME}/Applications/streamlink-twitch-gui.AppImage"
+STG_ARCH=$(uname -m)
+if [ -f "$STG_APPIMAGE" ]; then
+	echo "Ignoring Streamlink Twitch GUI, looks already installed."
+elif [ "$STG_ARCH" != "x86_64" ] && [ "$STG_ARCH" != "i686" ]; then
+	echo "No Streamlink Twitch GUI AppImage for $STG_ARCH, skipping."
+else
+	mkdir -p "${HOME}/Applications" "${HOME}/.local/share/applications" "${HOME}/.local/share/icons"
+
+	STG_URL=$(curl -fsSL https://api.github.com/repos/streamlink/streamlink-twitch-gui/releases/latest \
+		| grep -o "https://[^\"]*/streamlink-twitch-gui-v[0-9.]*-${STG_ARCH}\.AppImage" | head -n 1)
+
+	if [ -z "$STG_URL" ]; then
+		echo "Could not find latest Streamlink Twitch GUI release, falling back to v2.5.3."
+		STG_URL="https://github.com/streamlink/streamlink-twitch-gui/releases/download/v2.5.3/streamlink-twitch-gui-v2.5.3-${STG_ARCH}.AppImage"
+	fi
+
+	STG_TMP=$(mktemp -d)
+	STG_FILE="$STG_TMP/$(basename "$STG_URL")"
+	STG_TAG=$(basename "$(dirname "$STG_URL")")
+
+	if curl -fL -o "$STG_FILE" "$STG_URL" \
+		&& curl -fsSL -o "$STG_TMP/checksums.txt" "$(dirname "$STG_URL")/streamlink-twitch-gui-${STG_TAG}-checksums.txt" \
+		&& (cd "$STG_TMP" && grep " $(basename "$STG_FILE")\$" checksums.txt | sha256sum -c -); then
+		mv "$STG_FILE" "$STG_APPIMAGE"
+		chmod +x "$STG_APPIMAGE"
+
+		# Extract the icon from the AppImage
+		(cd "$STG_TMP" && "$STG_APPIMAGE" --appimage-extract 'usr/share/icons/*' > /dev/null 2>&1)
+		STG_ICON=$(find "$STG_TMP/squashfs-root/usr/share/icons" -path '*256x256*' -name '*.png' 2> /dev/null | head -n 1)
+		if [ -n "$STG_ICON" ]; then
+			cp -L "$STG_ICON" "${HOME}/.local/share/icons/streamlink-twitch-gui.png"
+		fi
+
+		cat << EOT > "${HOME}/.local/share/applications/streamlink-twitch-gui.desktop"
+[Desktop Entry]
+Type=Application
+Name=Streamlink Twitch GUI
+GenericName=Twitch.tv browser for Streamlink
+Comment=Browse Twitch.tv and watch streams in your videoplayer of choice
+Keywords=streamlink;twitch;
+Exec=${STG_APPIMAGE}
+Icon=${HOME}/.local/share/icons/streamlink-twitch-gui.png
+Categories=AudioVideo;Network;
+Terminal=false
+StartupWMClass=streamlink-twitch-gui
+EOT
+	else
+		echo "Download or checksum verification failed for Streamlink Twitch GUI."
+	fi
+	rm -rf "$STG_TMP"
+fi
+
 # 4. Various config
 
 # Prevent oversized journal files
